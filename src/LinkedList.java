@@ -1,7 +1,8 @@
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 /**
- * Created by devon on 9/21/2015.
+ * Created by Devon on 9/21/2015.
  *
  *
  *
@@ -40,6 +41,14 @@ public class LinkedList<T> {
         return size == 0;
     }
 
+    //removes all elements
+    //no param or reutrn
+    public void clear(){
+        while(!isEmpty()){
+            remove();
+        }
+    }
+
     //isFull method is fairly useless for this scenario.
     //@return is always false, because our implementation can never be full.
     public boolean isFull(){
@@ -59,40 +68,46 @@ public class LinkedList<T> {
         return true;
     }
 
-    //Searches list for a generic T element.
-    //This method was tricky..in figuring out if i was checking currentNode against an object or a reference
-    //@return boolean (true if element was found)
-    //@param Generic T element
+    //Checks if in element is in the list.
+    //@return true if it finds the lement, false if it doesn't
+    //@param = element you want to search for.
+    //This function uses the getFrequencyOf method to determine if we have the element or not. Allowed me to write less code
     public boolean contains(T element){
-        System.out.printf("Searching for element: %s%n", element.toString());
-        boolean found = false;
-        Node currentNode = head.next;
-        while(currentNode.element != element){
-            if(currentNode.next.element.equals(element))
-                return true;
-            currentNode = currentNode.next;
-        }
-        return found;
+        if(getFrequencyOf(element)>0)
+            return true;
+        else
+            return false;
     }
 
-    //Removes a specigic element, and re-assigns links accordingly.
-    //@return generic T of object removed
-    //@param Generic T of object to be removed
-    public T remove(T element){
-        Node currentNode = head;
+    //finds the reference of an element and returns it.'
+    //@return Node that holds the element youre searching for
+    //@param element to search for
+    private Node getReferenceTo(T element){
+        boolean found = false;
+        Node currentNode = head.next;
 
-        while(!currentNode.element.equals(element)){
-            System.out.println("Current: "+currentNode.element);//debugging: remove later
-            if(currentNode.element.equals(element)) {
-                currentNode.prev = currentNode.next;
-                currentNode.next = currentNode.prev;
-                currentNode.prev = null;
-                currentNode.next = null;
-                return currentNode.element;
+        while(!found && (currentNode!= null)){
+            if(element.equals(currentNode.element)){
+                found=true;
             }
-            currentNode = currentNode.next;
+            else
+                currentNode=currentNode.next;
         }
-        return currentNode.element;
+        return currentNode;
+    }
+    //removes a specific element.
+    //@param element to be removed
+    //@return boolean, true if removed.
+    //Moves object to the front then calls remove() method
+    public boolean remove(T element){
+        boolean result = false;
+        Node tempNode = getReferenceTo(element);
+        if(tempNode!=null){
+            tempNode.element=head.next.element;
+            remove();
+            result = true;
+        }
+        return result;
     }
 
     //Checks how many times an object appears in the list
@@ -108,6 +123,8 @@ public class LinkedList<T> {
         }
         return counter;
     }
+    //Sends the elements to an array of Object type
+    //Returns this array
     public T[] toArray(){
         @SuppressWarnings("unchecked")
         T[] result = (T[]) new Integer[size()];
@@ -120,6 +137,18 @@ public class LinkedList<T> {
         }
         return result;
     }
+    //removes the fisrt element
+    //@return element that was removed
+    public T remove(){
+        T result = null;
+        if(head.next != null){
+            result = head.next.element;
+            head.next=head.next.next;
+            size--;
+        }
+        return result;
+    }
+
     public static void main(String args[]){
         LinkedList<Integer> list = new LinkedList<Integer>();//Creating a list object. Generic data type downcasts to Int type.. I think?
         list.isEmpty();//check if list is empty.
@@ -143,14 +172,14 @@ public class LinkedList<T> {
         //Is our list full? NO
         System.out.println("List Full: " + list.isFull());
         //Removing two, and then checking if it was correctly removed below
-        System.out.println("remove "+list.remove(2));
-        System.out.println("Check if '2' was removed: " + list.contains(2));
+        System.out.println("remove "+list.remove(1));
+        System.out.println("Check if '1' was removed: " + !list.contains(1));
         //Is our list empty? NO
         list.isEmpty();
         //Another size check..should be 4 since we removed '2'
         System.out.println("Size: " + list.size());
 
-        //Prints Array Elements, utilizes toArray method
+                //Prints Array Elements, utilizes toArray method
         for(Integer myInteger : list.toArray()){
             System.out.println(myInteger);
         }
