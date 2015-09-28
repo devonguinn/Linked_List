@@ -123,7 +123,7 @@ public class LinkedList<T> {
         }
         return counter;
     }
-    //Sends the elements to an array of Object type
+    //Sends the elements to an array of Integer type
     //Returns this array
     public T[] toArray(){
         @SuppressWarnings("unchecked")
